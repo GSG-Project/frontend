@@ -1,0 +1,327 @@
+.compare-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-main);
+  overflow: hidden;
+  font-family: var(--font-family);
+}
+
+.compare-page * { box-sizing: border-box; }
+
+.compare-main {
+  flex: 1;
+  padding: 12px 20px;
+  max-width: 1366px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-rows: 1.2fr 1fr;
+  gap: 12px;
+  min-height: 0;
+}
+
+.compare-top-section {
+  display: grid;
+  grid-template-columns: 2.2fr 1fr;
+  gap: 12px;
+  min-height: 0;
+}
+
+.compare-form-section {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.compare-form-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.compare-form-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.compare-btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+  padding: 7px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 0.85rem;
+}
+
+.compare-btn-primary:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.compare-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.compare-tab {
+  padding: 5px 10px;
+  border: 1px solid var(--color-border);
+  background: var(--color-white);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.compare-tab.active {
+  background-color: var(--color-secondary);
+  color: var(--color-white);
+  border-color: var(--color-secondary);
+}
+
+.compare-input-group {
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.compare-input-group label {
+  margin-bottom: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.compare-textarea {
+  width: 100%;
+  flex: 1;
+  min-height: 50px;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  resize: none;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.compare-textarea:focus,
+.compare-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+.compare-selectors-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.compare-select {
+  width: 100%;
+  padding: 7px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-white);
+  font-size: 0.85rem;
+}
+
+.compare-evaluation-criteria {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background-color: var(--color-bg-light);
+  font-size: 0.8rem;
+  flex-shrink: 0;
+}
+
+.compare-link-btn {
+  color: var(--color-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 0.8rem;
+}
+
+.compare-dataset-section {
+  background-color: #fafafa;
+  border: 2px dashed var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
+  position: relative;
+  opacity: 0.7;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.compare-future-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 0.7rem;
+  color: #888;
+}
+
+.compare-dataset-title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.compare-dataset-preview {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  padding: 8px;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+  min-height: 0;
+}
+
+.compare-preview-line {
+  height: 6px;
+  background-color: var(--color-border);
+  border-radius: 4px;
+  width: 100%;
+}
+
+.compare-preview-line.short { width: 70%; }
+
+.compare-dataset-note {
+  margin-top: 8px;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+
+.compare-error-message {
+  margin-top: 6px;
+  color: var(--color-danger);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.compare-status-section {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.compare-status-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.compare-status-legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 0.75rem;
+}
+
+.compare-legend-item { display: flex; align-items: center; gap: 4px; }
+
+.compare-dot { width: 6px; height: 6px; border-radius: 50%; }
+.compare-dot.pending { background-color: #9CA3AF; }
+.compare-dot.running { background-color: #F59E0B; }
+.compare-dot.completed { background-color: var(--color-success); }
+.compare-dot.failed { background-color: var(--color-danger); }
+
+.compare-results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.compare-result-card {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px;
+  background-color: var(--color-white);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.compare-result-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 6px;
+  flex-shrink: 0;
+}
+
+.compare-badge {
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 500;
+}
+.compare-badge.running { background-color: #fef3c7; color: #92400e; }
+
+.compare-result-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.compare-muted-text {
+  color: #888;
+  font-size: 0.85rem;
+}
+
+.compare-dataset-btn {
+  background-color: var(--color-white);
+  border: 1px solid var(--color-border);
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: fit-content;
+  font-size: 0.8rem;
+}
+
+.compare-dataset-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+@media (max-width: 1024px) {
+  .compare-page { height: auto; min-height: 100vh; overflow: auto; }
+  .compare-main { grid-template-rows: auto auto; height: auto; }
+  .compare-top-section { grid-template-columns: 1fr; }
+  .compare-results-grid { grid-template-columns: 1fr; }
+  .compare-form-section, .compare-dataset-section, .compare-status-section { min-height: 300px; }
+}

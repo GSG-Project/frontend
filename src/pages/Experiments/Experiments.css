@@ -1,0 +1,15 @@
+.experiments-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-main);
+  font-family: var(--font-family);
+}
+
+.experiments-page * { box-sizing: border-box; }
+
+.experiments-main {
+  flex: 1;
+  padding: 24px;
+}
