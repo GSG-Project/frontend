@@ -1,0 +1,80 @@
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  height: 60px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #E5E7EB;
+  font-family: var(--font-family);
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.header-logo {
+  font-weight: bold;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: var(--color-text-main);
+}
+
+.header-nav {
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--color-text-main);
+  font-weight: 500;
+  padding-bottom: 4px;
+  font-size: 0.9rem;
+}
+
+.nav-link.active {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.user-avatar {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  overflow: hidden;
+}
+
+.user-name {
+  color: var(--color-text-main);
+  font-weight: 500;
+}
+
+.user-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: 8px;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--color-text-main);
+  font-size: 0.8rem;
+  text-decoration: none;
+}
