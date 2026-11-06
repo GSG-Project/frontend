@@ -1,12 +1,12 @@
-import "./styles/App.css";
+import Login from "./pages/Login.jsx";
+import Register from "./pages/Register.jsx";
 
-function App() {
-  return (
-    <main>
-      <h1>Simera</h1>
-      <p>AI Models Comparison Platform</p>
-    </main>
-  );
+export default function App() {
+  const path = window.location.pathname;
+
+  if (path === "/register") {
+    return <Register />;
+  }
+
+  return <Login />;
 }
-
-export default App;
