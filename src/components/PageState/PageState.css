@@ -1,0 +1,42 @@
+.page-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-6) var(--space-3);
+  border-radius: var(--radius);
+  background: var(--color-white);
+  box-shadow: var(--shadow-surface);
+  text-align: center;
+}
+
+.page-state-title {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.page-state-message {
+  max-width: 56ch;
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.page-state-error .page-state-title,
+.page-state-error .page-state-message {
+  color: #991B1B;
+}
+
+.page-state-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+@media (max-width: 640px) {
+  .page-state {
+    padding: var(--space-4) var(--space-2);
+  }
+}
