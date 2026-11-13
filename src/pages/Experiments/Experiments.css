@@ -1,0 +1,104 @@
+.experiments-table {
+  table-layout: fixed;
+}
+
+.experiments-col-title { width: 34%; }
+.experiments-col-model { width: 17%; }
+.experiments-col-date { width: 15%; }
+.experiments-col-actions { width: 17%; }
+
+.experiments-table tbody tr {
+  transition: background-color 0.15s;
+}
+
+.experiments-table tbody tr:hover {
+  background-color: var(--color-tint);
+}
+
+.experiments-title {
+  display: block;
+  overflow: hidden;
+  color: var(--color-text-main);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.experiments-title:hover {
+  color: var(--color-primary);
+}
+
+.experiments-title:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.experiments-run-count {
+  display: block;
+  margin-top: var(--space-half);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.experiments-model {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.experiments-date {
+  color: var(--color-text-muted);
+}
+
+.experiments-actions-head {
+  text-align: right;
+}
+
+.experiments-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-1);
+}
+
+.experiments-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+}
+
+@container (max-width: 759px) {
+  .experiments-table {
+    table-layout: auto;
+  }
+
+  .experiments-table tbody tr:hover {
+    background-color: var(--color-white);
+  }
+
+  .experiments-title {
+    color: var(--color-primary);
+    font-size: 1rem;
+    white-space: normal;
+  }
+
+  .experiments-table td.experiments-title-cell {
+    padding-bottom: var(--space-2);
+  }
+
+  .experiments-table td.experiments-actions-cell {
+    padding-top: var(--space-2);
+  }
+
+  .experiments-actions {
+    justify-content: stretch;
+  }
+
+  .experiments-actions > * {
+    flex: 1;
+  }
+}
