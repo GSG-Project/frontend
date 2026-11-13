@@ -1,0 +1,262 @@
+.profile-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--color-bg-light);
+  color: var(--color-text-main);
+  font-family: var(--font-family);
+}
+
+.profile-page * { box-sizing: border-box; }
+
+.profile-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.profile-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-2);
+}
+
+.profile-title { font-size: 1.5rem; font-weight: 600; }
+.profile-subtitle { font-size: 0.875rem; color: var(--color-text-muted); }
+
+.profile-summary-card,
+.profile-card {
+  padding: var(--space-3);
+  border-radius: var(--radius);
+  background-color: var(--color-white);
+  box-shadow: var(--shadow-surface);
+}
+
+.profile-summary-title {
+  margin-bottom: var(--space-2);
+  color: var(--color-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.profile-summary-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.profile-summary-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.profile-avatar-large {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  overflow: hidden;
+  border-radius: 50%;
+  background-color: var(--color-tint-strong);
+  color: var(--color-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.profile-summary-info { min-width: 0; overflow-wrap: anywhere; }
+.profile-summary-info h3 { margin-bottom: var(--space-half); font-size: 1.05rem; font-weight: 600; }
+.profile-summary-info p { margin-bottom: var(--space-half); color: var(--color-text-muted); font-size: 0.875rem; }
+.profile-summary-info span { color: var(--color-text-muted); font-size: 0.75rem; }
+
+.profile-btn-dark,
+.profile-btn-outline {
+  min-height: var(--control-height);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.profile-btn-dark {
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  font-weight: 600;
+}
+
+.profile-btn-dark:hover { background-color: var(--color-primary-hover); }
+
+.profile-btn-outline {
+  border: 1px solid var(--color-border);
+  background-color: var(--color-white);
+  color: var(--color-text-main);
+}
+
+.profile-btn-outline:hover {
+  border-color: var(--color-secondary);
+  color: var(--color-primary);
+}
+
+.profile-btn-dark:focus-visible,
+.profile-btn-outline:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  gap: var(--space-3);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-card-title {
+  margin-bottom: var(--space-2);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--color-line);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.profile-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.profile-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.profile-input-group label {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.profile-input-field {
+  width: 100%;
+  min-height: var(--control-height);
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background-color: var(--color-white);
+  color: var(--color-text-main);
+  font-size: 0.9rem;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.profile-input-field:disabled {
+  border-color: var(--color-line);
+  background-color: var(--color-tint);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.profile-input-field:focus:not(:disabled) {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(109, 74, 255, 0.15);
+}
+
+.profile-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin-top: auto;
+}
+
+.profile-right-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.profile-security-text {
+  margin-bottom: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 1024px) {
+  .profile-main { padding: var(--space-4) var(--space-3); }
+}
+
+@media (max-width: 768px) {
+  .profile-main { padding: var(--space-3) var(--space-2); gap: var(--space-2); }
+  .profile-grid { grid-template-columns: 1fr; gap: var(--space-2); }
+  .profile-right-col { gap: var(--space-2); }
+  .profile-form-grid { grid-template-columns: 1fr; }
+  .profile-summary-content { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 480px) {
+  .profile-summary-card,
+  .profile-card { padding: var(--space-2); }
+}
+
+.profile-message {
+  margin-bottom: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.profile-message-success { background: #E7F7EF; color: #0B6B4A; }
+.profile-message-error { background: #FEF2F2; color: #991B1B; }
+
+.profile-input-error { border-color: var(--color-danger); }
+
+.profile-field-error {
+  color: var(--color-danger);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.profile-hint {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+.profile-btn-start { align-self: flex-start; }
+
+.profile-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.profile-password-form .profile-form-actions { margin-top: var(--space-1); }
+
+.profile-signed-out {
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+a.profile-btn-dark {
+  display: inline-flex;
+  align-items: center;
+}
