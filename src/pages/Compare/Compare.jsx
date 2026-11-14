@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AppHeader from "../../components/AppHeader/AppHeader";
 import { getModels, createComparison } from "../../services/comparisonService";
+import { describeGeneralError, fieldErrorsFrom } from "../../services/format";
 import "./Compare.css";
 
 export default function Compare({ user, onLogout }) {
@@ -12,40 +13,44 @@ export default function Compare({ user, onLogout }) {
   const [modelB, setModelB] = useState("");
   const [executionState, setExecutionState] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
-  const [models, setModels] = useState([]);
-  const [isLoadingModels, setIsLoadingModels] = useState(true);
-  const [modelsError, setModelsError] = useState("");
+  const [modelsKey, setModelsKey] = useState(0);
+  const [modelsResult, setModelsResult] = useState({ key: null, models: [], error: "" });
 
   useEffect(() => {
     const controller = new AbortController();
-
-    async function loadModels() {
-      try {
-        const data = await getModels({ signal: controller.signal });
-        if (!Array.isArray(data?.models)) throw new Error("The models API returned an unexpected response.");
-        setModels(data.models.filter((model) => model.is_active));
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          setModelsError(error.message || "Unable to load models.");
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setIsLoadingModels(false);
-        }
-      }
-    }
-
-    loadModels();
+    getModels({ signal: controller.signal })
+      .then((data) => {
+        if (!Array.isArray(data?.models)) throw new Error("The list of models could not be read. Please try again.");
+        setModelsResult({ key: modelsKey, models: data.models.filter((model) => model.is_active), error: "" });
+      })
+      .catch((error) => {
+        if (error.name === "AbortError") return;
+        setModelsResult({
+          key: modelsKey,
+          models: [],
+          error: describeGeneralError(error, "The list of models could not be loaded. Please try again."),
+        });
+      });
     return () => controller.abort();
-  }, []);
+  }, [modelsKey]);
+
+  const isLoadingModels = modelsResult.key !== modelsKey;
+  const models = modelsResult.models;
+  const modelsError = isLoadingModels ? "" : modelsResult.error;
+  const retryModels = () => setModelsKey((key) => key + 1);
 
   const modelName = (id) => models.find((model) => model.id === id)?.name || "";
 
   const handleRunComparison = async () => {
     if (executionState === "running") return;
 
-    if (!promptText.trim() || !modelA || !modelB) {
-      setErrorMessage("Please enter a prompt and select both models.");
+    if (!promptText.trim()) {
+      setErrorMessage("Please enter a prompt.");
+      return;
+    }
+
+    if (!modelA || !modelB) {
+      setErrorMessage("Please choose both models.");
       return;
     }
 
@@ -63,16 +68,22 @@ export default function Compare({ user, onLogout }) {
         model_ids: [modelA, modelB],
       });
 
-      const params = new URLSearchParams({
-        experiment: String(comparisonResponse.experiment_id),
-        run: String(comparisonResponse.run_id),
-      });
-      navigate(`/results?${params}`, {
+      const params = user
+        ? `?${new URLSearchParams({ experiment: String(comparisonResponse.experiment_id), run: String(comparisonResponse.run_id) })}`
+        : "";
+      navigate(`/results${params}`, {
         state: { promptText: promptText.trim(), modelA, modelB, comparisonResponse },
       });
     } catch (error) {
       setExecutionState("idle");
-      setErrorMessage(error.message || "Failed to run comparison.");
+      if (error?.status === 400) {
+        const fields = Object.values(fieldErrorsFrom(error));
+        setErrorMessage(fields.join(" ") || "Please check the prompt and the selected models, then try again.");
+      } else if (error?.status >= 500) {
+        setErrorMessage("The comparison could not be completed on the server. Please try again in a moment.");
+      } else {
+        setErrorMessage(describeGeneralError(error, "The comparison could not be completed. Please try again."));
+      }
     }
   };
 
@@ -93,6 +104,13 @@ export default function Compare({ user, onLogout }) {
                 {isLoadingModels ? "Loading models..." : executionState === "running" ? "Running..." : "Run Comparison"}
               </button>
             </div>
+
+            {!user && (
+              <p className="compare-guest-note" role="note">
+                You're not signed in. You can still run a comparison, but it won't be saved to your history.{" "}
+                <Link to="/login">Log in</Link> or <Link to="/register">create an account</Link> to keep your results.
+              </p>
+            )}
 
             <div className="compare-input-group">
               <label htmlFor="comparison-prompt">Prompt</label>
@@ -115,7 +133,7 @@ export default function Compare({ user, onLogout }) {
                   id="model-a"
                   className="compare-select"
                   value={modelA}
-                  onChange={(e) => setModelA(e.target.value)}
+                  onChange={(e) => { setModelA(e.target.value); if (errorMessage) setErrorMessage(""); }}
                   disabled={isLoadingModels || Boolean(modelsError)}
                 >
                   <option value="">{isLoadingModels ? "Loading models..." : "Select model"}</option>
@@ -131,7 +149,7 @@ export default function Compare({ user, onLogout }) {
                   id="model-b"
                   className="compare-select"
                   value={modelB}
-                  onChange={(e) => setModelB(e.target.value)}
+                  onChange={(e) => { setModelB(e.target.value); if (errorMessage) setErrorMessage(""); }}
                   disabled={isLoadingModels || Boolean(modelsError)}
                 >
                   <option value="">{isLoadingModels ? "Loading models..." : "Select model"}</option>
@@ -142,7 +160,12 @@ export default function Compare({ user, onLogout }) {
               </div>
             </div>
 
-            {modelsError && <p className="compare-error-message" role="alert">Could not load models: {modelsError}</p>}
+            {modelsError && (
+              <div className="compare-error-message compare-error-with-action" role="alert">
+                <span>{modelsError}</span>
+                <button type="button" className="compare-retry-btn" onClick={retryModels}>Try again</button>
+              </div>
+            )}
             {!isLoadingModels && !modelsError && models.length === 0 && (
               <p className="compare-error-message" role="alert">No active models are currently available.</p>
             )}

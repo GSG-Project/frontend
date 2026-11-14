@@ -99,6 +99,7 @@ export default function Experiments({ user, onLogout }) {
       return (
         <PageState title="Sign in to see your history" message="Your saved experiments are linked to your account.">
           <Link to="/login" className="history-btn-primary">Sign in</Link>
+          <Link to="/register" className="history-btn">Create an account</Link>
         </PageState>
       );
     }

@@ -124,7 +124,7 @@ export default function Landing({ user }) {
                   <Link to="/compare" className="landing-btn landing-btn-primary">Start a comparison</Link>
                 ) : (
                   <>
-                    <Link to="/register" className="landing-btn landing-btn-primary">Get Started</Link>
+                    <Link to="/compare" className="landing-btn landing-btn-primary">Get Started</Link>
                     <Link to="/login" className="landing-btn landing-btn-ghost">Log In</Link>
                   </>
                 )}

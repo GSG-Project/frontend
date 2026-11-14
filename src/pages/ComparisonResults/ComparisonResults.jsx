@@ -192,6 +192,13 @@ export default function ComparisonResults({ user, onLogout }) {
           </div>
         </div>
 
+        {!isSignedIn && (
+          <p className="results-notice results-guest-note" role="note">
+            This comparison isn't saved because you're not signed in.{" "}
+            <Link to="/login">Log in</Link> or <Link to="/register">create an account</Link> to save comparisons and run them again.
+          </p>
+        )}
+
         {promptText && (
           <div className="results-prompt" title={promptText}>
             <strong>Prompt</strong>

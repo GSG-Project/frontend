@@ -224,3 +224,43 @@
   font-size: 0.875rem;
   font-weight: 500;
 }
+
+.compare-guest-note {
+  margin-bottom: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius);
+  background: var(--color-tint);
+  color: var(--color-text-main);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.compare-guest-note a {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.compare-error-with-action {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1) var(--space-2);
+}
+
+.compare-retry-btn {
+  min-height: 32px;
+  padding: var(--space-half) var(--space-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-white);
+  color: var(--color-text-main);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.compare-retry-btn:hover {
+  border-color: var(--color-secondary);
+  color: var(--color-primary);
+}

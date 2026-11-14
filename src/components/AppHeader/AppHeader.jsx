@@ -178,16 +178,25 @@ export default function AppHeader({ user, onLogout }) {
           {renderLinks()}
         </nav>
 
-        <div className="header-user">
-          <div className="user-avatar">{getInitials()}</div>
-          <span className="user-name">{displayName}</span>
-          <div className="user-actions">
-            <NavLink to="/profile" className="btn-outline">Profile</NavLink>
-            <button type="button" className="btn-outline" onClick={handleSignOutClick}>
-              Sign Out
-            </button>
+        {user ? (
+          <div className="header-user">
+            <div className="user-avatar">{getInitials()}</div>
+            <span className="user-name">{displayName}</span>
+            <div className="user-actions">
+              <NavLink to="/profile" className="btn-outline">Profile</NavLink>
+              <button type="button" className="btn-outline" onClick={handleSignOutClick}>
+                Sign Out
+              </button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="header-user">
+            <div className="user-actions">
+              <Link to="/login" className="btn-outline">Log In</Link>
+              <Link to="/register" className="btn-solid">Sign Up</Link>
+            </div>
+          </div>
+        )}
       </header>
 
       {/* Side navigation */}
@@ -215,18 +224,26 @@ export default function AppHeader({ user, onLogout }) {
           {renderLinks(isMobile ? closeDrawer : undefined)}
         </nav>
 
-        <div className="sidebar-account">
-          <div className="sidebar-user">
-            <div className="user-avatar">{getInitials()}</div>
-            <span className="sidebar-user-name">{displayName}</span>
+        {user ? (
+          <div className="sidebar-account">
+            <div className="sidebar-user">
+              <div className="user-avatar">{getInitials()}</div>
+              <span className="sidebar-user-name">{displayName}</span>
+            </div>
+            <NavLink to="/profile" className="btn-outline" onClick={isMobile ? closeDrawer : undefined}>
+              Profile
+            </NavLink>
+            <button type="button" className="btn-outline" onClick={handleSignOutClick}>
+              Sign Out
+            </button>
           </div>
-          <NavLink to="/profile" className="btn-outline" onClick={isMobile ? closeDrawer : undefined}>
-            Profile
-          </NavLink>
-          <button type="button" className="btn-outline" onClick={handleSignOutClick}>
-            Sign Out
-          </button>
-        </div>
+        ) : (
+          <div className="sidebar-account">
+            <p className="sidebar-guest-note">Sign in to save your comparisons.</p>
+            <Link to="/login" className="btn-outline" onClick={isMobile ? closeDrawer : undefined}>Log In</Link>
+            <Link to="/register" className="btn-solid" onClick={isMobile ? closeDrawer : undefined}>Sign Up</Link>
+          </div>
+        )}
       </aside>
     </>
   );
