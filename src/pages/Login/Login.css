@@ -174,3 +174,11 @@
   outline-offset: 4px;
   border-radius: var(--radius-sm);
 }
+
+.auth-hint {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.5;
+  text-align: center;
+}

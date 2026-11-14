@@ -2,15 +2,15 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AppHeader from "../../components/AppHeader/AppHeader";
 import { changePassword, updateProfile } from "../../services/authService";
-import { fieldErrorsFrom, formatUserName, getUserInitials } from "../../services/format";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
+import { describeGeneralError, fieldErrorsFrom, formatUserName, getUserInitials } from "../../services/format";
 import "./Profile.css";
 
 const EMPTY_PASSWORDS = { oldPassword: "", newPassword: "", confirmPassword: "" };
 
 function generalError(error, fallback) {
   if (error?.status === 401) return "Your session has expired. Please sign in again.";
-  if (error instanceof TypeError) return "Could not reach the server. Check your connection and try again.";
-  return fieldErrorsFrom(error).form || error?.message || fallback;
+  return fieldErrorsFrom(error).form || describeGeneralError(error, fallback);
 }
 
 export default function Profile({ user, setUser, onLogout }) {
@@ -125,7 +125,10 @@ export default function Profile({ user, setUser, onLogout }) {
         <main className="profile-main">
           <div className="profile-card profile-signed-out">
             <h1 className="profile-card-title">Sign in to see your profile</h1>
-            <Link to="/login" className="profile-btn-dark">Sign in</Link>
+            <div className="profile-form-actions">
+              <Link to="/login" className="profile-btn-dark">Sign in</Link>
+              <Link to="/register" className="profile-btn-outline">Create an account</Link>
+            </div>
           </div>
         </main>
       </div>
@@ -242,9 +245,8 @@ export default function Profile({ user, setUser, onLogout }) {
                 <form className="profile-password-form" onSubmit={savePassword} noValidate>
                   <div className="profile-input-group">
                     <label htmlFor="old-password">Current password</label>
-                    <input
+                    <PasswordInput
                       id="old-password"
-                      type="password"
                       autoComplete="current-password"
                       className={fieldClass(passwordErrors.old_password)}
                       value={passwords.oldPassword}
@@ -256,9 +258,8 @@ export default function Profile({ user, setUser, onLogout }) {
                   </div>
                   <div className="profile-input-group">
                     <label htmlFor="new-password">New password</label>
-                    <input
+                    <PasswordInput
                       id="new-password"
-                      type="password"
                       autoComplete="new-password"
                       className={fieldClass(passwordErrors.new_password)}
                       value={passwords.newPassword}
@@ -270,9 +271,8 @@ export default function Profile({ user, setUser, onLogout }) {
                   </div>
                   <div className="profile-input-group">
                     <label htmlFor="confirm-password">Confirm new password</label>
-                    <input
+                    <PasswordInput
                       id="confirm-password"
-                      type="password"
                       autoComplete="new-password"
                       className={fieldClass(passwordErrors.confirm_password)}
                       value={passwords.confirmPassword}

@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/authService";
-import { fieldErrorsFrom } from "../../services/format";
+import PasswordInput from "../../components/PasswordInput/PasswordInput";
+import { describeGeneralError, fieldErrorsFrom } from "../../services/format";
 import "./Register.css";
 
 function AuthHeader({ linkText, linkTo }) {
   return (
     <header className="auth-header">
       <Link to="/" className="auth-header-logo" aria-label="ModelJudge home">ModelJudge</Link>
-      <a href={linkTo} className="auth-link">{linkText}</a>
+      <Link to={linkTo} className="auth-link">{linkText}</Link>
     </header>
   );
 }
@@ -23,6 +24,7 @@ export default function Register({ setUser }) {
   const [errors, setErrors] = useState({});
   const [apiError, setApiError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isSlow, setIsSlow] = useState(false);
 
   function validate() {
     const newErrors = {};
@@ -42,6 +44,7 @@ export default function Register({ setUser }) {
     if (Object.keys(newErrors).length > 0) return;
 
     setIsLoading(true);
+    const slowTimer = setTimeout(() => setIsSlow(true), 5000);
     try {
       const data = await registerUser({
         email: email.trim(),
@@ -60,9 +63,11 @@ export default function Register({ setUser }) {
         setErrors(byField);
         if (form) setApiError(form);
       } else {
-        setApiError(form || error.message);
+        setApiError(form || describeGeneralError(error, "We couldn't create your account. Please try again."));
       }
     } finally {
+      clearTimeout(slowTimer);
+      setIsSlow(false);
       setIsLoading(false);
     }
   }
@@ -75,7 +80,7 @@ export default function Register({ setUser }) {
         <form className="auth-card" onSubmit={handleSubmit} noValidate>
           <h1 className="auth-title">Create your account</h1>
 
-          {apiError && <div className="auth-message">{apiError}</div>}
+          {apiError && <div className="auth-message" role="alert">{apiError}</div>}
 
           <div className="auth-field-row">
             <div className="auth-field">
@@ -116,6 +121,7 @@ export default function Register({ setUser }) {
             <input
               id="email"
               type="email"
+              autoComplete="email"
               placeholder="name@example.com"
               className={`auth-input ${errors.email ? "auth-input-error" : ""}`}
               value={email}
@@ -126,9 +132,9 @@ export default function Register({ setUser }) {
 
           <div className="auth-field">
             <label className="auth-label" htmlFor="password">Password</label>
-            <input
+            <PasswordInput
               id="password"
-              type="password"
+              autoComplete="new-password"
               placeholder="••••••••"
               className={`auth-input ${errors.password ? "auth-input-error" : ""}`}
               value={password}
@@ -141,8 +147,14 @@ export default function Register({ setUser }) {
             {isLoading ? "Creating account..." : "Create account"}
           </button>
 
+          {isSlow && (
+            <p className="auth-hint" role="status">
+              The server is waking up. This can take up to a minute.
+            </p>
+          )}
+
           <div className="auth-bottom">
-            <a href="/login" className="auth-bottom-link">Already have an account? Login</a>
+            <Link to="/login" className="auth-bottom-link">Already have an account? Login</Link>
           </div>
         </form>
       </main>
