@@ -4,6 +4,9 @@ const AUTH_ENDPOINTS = ["/api/auth/login/", "/api/auth/register/", "/api/auth/re
 
 export const SESSION_EXPIRED_EVENT = "auth:session-expired";
 
+export const NETWORK_ERROR_MESSAGE =
+  "We couldn't connect to the server. Check your internet connection and try again. If the problem continues, the server may be starting up, so wait a minute and retry.";
+
 export function clearSession() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
@@ -117,7 +120,15 @@ async function sendRequest(endpoint, options) {
   } catch (error) {
     clearTimeout(timeoutId);
     if (error.name === "AbortError" && isTimeout) {
-      throw new Error("Request timed out. The server is taking too long to respond. Please try again.");
+      const timeoutError = new Error("The server is taking too long to respond. Please try again in a moment.");
+      timeoutError.isTimeout = true;
+      throw timeoutError;
+    }
+    if (error instanceof TypeError) {
+      const networkError = new Error(NETWORK_ERROR_MESSAGE);
+      networkError.isNetworkError = true;
+      networkError.status = 0;
+      throw networkError;
     }
     throw error;
   }

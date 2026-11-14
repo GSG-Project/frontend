@@ -52,33 +52,63 @@ export function getUserInitials(user) {
   return initials.toUpperCase() || "?";
 }
 
+const NETWORK_MESSAGE =
+  "We couldn't connect to the server. Check your internet connection and try again. If the problem continues, the server may be starting up, so wait a minute and retry.";
+
+export const isNetworkError = (error) => Boolean(error?.isNetworkError) || error instanceof TypeError;
+
+function sentence(text) {
+  const trimmed = String(text).trim();
+  return trimmed ? trimmed[0].toUpperCase() + trimmed.slice(1) : trimmed;
+}
+
+function friendlyFieldMessage(field, text) {
+  if (field === "email" && /already exists/i.test(text)) {
+    return "An account with this email already exists. Try signing in instead.";
+  }
+  return sentence(text);
+}
+
 export function fieldErrorsFrom(error) {
   const data = error?.data;
   if (!data || typeof data !== "object" || Array.isArray(data)) return {};
   const errors = {};
   for (const [field, value] of Object.entries(data)) {
-    const text = Array.isArray(value) ? value.join(" ") : typeof value === "string" ? value : "";
-    if (!text) continue;
+    const parts = (Array.isArray(value) ? value : [value]).filter((item) => typeof item === "string" && item.trim());
+    if (!parts.length) continue;
     const key = field === "non_field_errors" || field === "detail" ? "form" : field;
+    const text = parts.map((part) => friendlyFieldMessage(field, part)).join(" ");
     errors[key] = errors[key] ? `${errors[key]} ${text}` : text;
   }
   return errors;
 }
 
+export function describeGeneralError(error, fallback = "Something went wrong. Please try again.") {
+  if (isNetworkError(error)) return NETWORK_MESSAGE;
+  if (error?.isTimeout) return "The server is taking too long to respond. Please try again in a moment.";
+  if (error?.status === 429) return "Too many attempts. Please wait a moment and try again.";
+  if (error?.status >= 500) return error.message || "The server ran into a problem. Please try again in a moment.";
+  return error?.message ? sentence(error.message) : fallback;
+}
+
+export function describeLoginError(error) {
+  if (error?.status === 401) return "The email or password is incorrect. Please check them and try again.";
+  if (error?.status === 400) return "Please enter a valid email and password.";
+  return describeGeneralError(error, "We couldn't sign you in. Please try again.");
+}
+
 export function describeActionError(error, action) {
-  if (error?.status === 401) return "Your session has expired. Sign in again, then try once more.";
+  if (error?.status === 401) return "Your session has expired. Please sign in again, then try once more.";
   if (error?.status === 404) return "This experiment no longer exists or does not belong to your account.";
-  if (error?.status === 400 && error.message) return error.message;
-  if (error instanceof TypeError) return "Could not reach the server. Check your connection and try again.";
-  if (action === "rerun" && /timed out/i.test(error?.message || "")) {
-    return "The new run is taking longer than expected. It may still finish on the server: reload this page in a minute to check.";
+  if (error?.status === 400 && error.message) return sentence(error.message);
+  if (action === "rerun" && error?.isTimeout) {
+    return "The new run is taking longer than expected. It may still finish on the server, so reload this page in a minute to check.";
   }
-  return error?.message || `The ${action === "rerun" ? "new run" : "request"} could not be completed. Please try again.`;
+  return describeGeneralError(error, `The ${action === "rerun" ? "new run" : "request"} could not be completed. Please try again.`);
 }
 
 export function describeLoadError(error) {
-  if (error?.status === 401) return "Your session has expired. Please sign in again to see your experiments.";
+  if (error?.status === 401) return "Your session has expired. Please sign in again to continue.";
   if (error?.status === 404) return "This experiment does not exist or does not belong to your account.";
-  if (error instanceof TypeError) return "Could not reach the server. Check your connection and try again.";
-  return error?.message || "Something went wrong while loading. Please try again.";
+  return describeGeneralError(error, "Something went wrong while loading. Please try again.");
 }
