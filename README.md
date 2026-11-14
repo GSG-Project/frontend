@@ -41,9 +41,10 @@ Every comparison made while signed in is saved as an **experiment**. An experime
 
 | Area | What the user can do |
 |---|---|
-| **Landing page** (`/`) | Read what ModelJudge does, see the six-step "How it works" flow and the main benefits, and go to sign up or log in. Signed-in users get a direct link into the app. |
-| **Registration** (`/register`) | Create an account with first name, optional last name, email and password. Backend validation errors are shown under the related field. |
-| **Login** (`/login`) | Sign in with email and password. The user's name is loaded from the account after login. |
+| **Landing page** (`/`) | Read what ModelJudge does, see the six-step "How it works" flow and the main benefits, and start right away: "Get Started" opens the comparison page without an account. Sign up and log in are one click away. Signed-in users get a direct link into the app. |
+| **Registration** (`/register`) | Create an account with first name, optional last name, email and password. Backend validation errors are shown under the related field in plain language. The password can be shown or hidden while typing. |
+| **Login** (`/login`) | Sign in with email and password, with a show/hide password control. Wrong credentials, connection problems and a slow server each get a clear message. The user's name is loaded from the account after login. |
+| **Guest comparisons** | Visitors can run a comparison without an account. A note explains that it will not be saved, with links to log in or sign up. |
 | **Session handling** | The session is renewed automatically when the access token expires. If renewal is no longer possible, the user is signed out. |
 | **Model selection** (`/compare`) | Choose two different models from the list returned by the backend. Inactive models are not offered. |
 | **Prompt submission** (`/compare`) | Enter a prompt and run the comparison. The button is disabled while a comparison is running, so it cannot be submitted twice. |
@@ -57,7 +58,7 @@ Every comparison made while signed in is saved as an **experiment**. An experime
 | **Run again** | Execute an experiment again from its details page. The new run is saved under the same experiment and opened automatically. |
 | **User profile** (`/profile`) | View the account, edit first and last name, change the password, and sign out. The email cannot be changed. |
 | **Navigation** | A header on desktop, a collapsible side panel on tablet, and a slide-in drawer on mobile. The ModelJudge logo always links back to the home page. |
-| **Loading, empty and error states** | Pages show clear states for loading, no data, expired sessions, missing experiments, network failures and server errors. |
+| **Loading, empty and error states** | Pages show clear, human-readable states for loading, no data, expired sessions, missing experiments, connection failures, timeouts and server errors. The model list can be reloaded with "Try again" if it fails to load. |
 
 ---
 
@@ -249,14 +250,14 @@ Landing (/) ──► Register (/register) or Login (/login)
                          └── Delete (with confirmation)     └── Run Again ──► new run opens
 ```
 
-1. **Start.** Visitors land on `/`. "Get Started" opens registration and "Log In" opens the login page. After signing in, the user arrives at `/compare`.
+1. **Start.** Visitors land on `/`. "Get Started" opens `/compare` straight away, without an account. "Log In" and "Sign Up" are available in the header. After signing in, the user arrives at `/compare`.
 2. **Compare.** The user writes a prompt, chooses Model A and Model B (two different models) and clicks **Run Comparison**. The request is synchronous: the page shows a running state until the backend returns both answers and the evaluation.
 3. **Results.** `/results?experiment=<id>&run=<id>` shows a summary (quality, latency, estimated cost), both answers side by side, a metrics table and the quality evaluation (winner, reasoning, criteria scores, strengths and weaknesses). Right after a comparison the page uses the data it just received; when it is opened from the link later (refresh, new tab, bookmark), it loads the saved run with `GET /api/experiments/{id}/`. **Rerun** saves a new run of the same experiment, shows its results and updates the link.
 4. **History.** `/experiments` lists saved experiments with their models, latest winner, run count and date. **View** opens an experiment; **Delete** removes it after confirmation.
 5. **Experiment details.** The page shows the experiment summary and a table of runs (newest first, numbered from the oldest). Selecting a run shows its model responses, technical performance and AI judge evaluation. **Run Again** creates a new run and opens it.
 6. **Profile.** `/profile` lets the user change their name and password, or sign out.
 
-**Signed-out users:** the History, Experiment Details and Profile pages show a sign-in prompt instead of data. The Compare page can be used without signing in, but such comparisons are not linked to an account and do not appear in History. Rerun requires signing in.
+**Signed-out users:** the header shows "Log In" and "Sign Up". History, Experiment Details and Profile show a prompt to sign in or create an account. The Compare page works without an account; such comparisons are shown right away but are not saved, so they do not appear in History and cannot be run again. A note on the Compare and Results pages says so.
 
 ---
 
