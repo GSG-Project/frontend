@@ -44,7 +44,7 @@ Every comparison made while signed in is saved as an **experiment**. An experime
 | **Landing page** (`/`) | Read what ModelJudge does, see the six-step "How it works" flow and the main benefits, and start right away: "Get Started" opens the comparison page without an account. Sign up and log in are one click away. Signed-in users get a direct link into the app. |
 | **Registration** (`/register`) | Create an account with first name, optional last name, email and password. Backend validation errors are shown under the related field in plain language. The password can be shown or hidden while typing. |
 | **Login** (`/login`) | Sign in with email and password, with a show/hide password control. Wrong credentials, connection problems and a slow server each get a clear message. The user's name is loaded from the account after login. |
-| **Guest comparisons** | Visitors can run a comparison without an account. A note explains that it will not be saved, with links to log in or sign up. |
+| **Guest comparisons** | Visitors can run a comparison without an account. The Results page notes that it was not saved, with links to log in or sign up. |
 | **Session handling** | The session is renewed automatically when the access token expires. If renewal is no longer possible, the user is signed out. |
 | **Model selection** (`/compare`) | Choose two different models from the list returned by the backend. Inactive models are not offered. |
 | **Prompt submission** (`/compare`) | Enter a prompt and run the comparison. The button is disabled while a comparison is running, so it cannot be submitted twice. |
@@ -257,7 +257,7 @@ Landing (/) ──► Register (/register) or Login (/login)
 5. **Experiment details.** The page shows the experiment summary and a table of runs (newest first, numbered from the oldest). Selecting a run shows its model responses, technical performance and AI judge evaluation. **Run Again** creates a new run and opens it.
 6. **Profile.** `/profile` lets the user change their name and password, or sign out.
 
-**Signed-out users:** the header shows "Log In" and "Sign Up". History, Experiment Details and Profile show a prompt to sign in or create an account. The Compare page works without an account; such comparisons are shown right away but are not saved, so they do not appear in History and cannot be run again. A note on the Compare and Results pages says so.
+**Signed-out users:** the header shows "Log In" and "Sign Up". History, Experiment Details and Profile show a prompt to sign in or create an account. The Compare page works without an account; such comparisons are shown right away but are not saved, so they do not appear in History and cannot be run again. A note on the Results page says so.
 
 ---
 

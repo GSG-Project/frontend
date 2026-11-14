@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import AppHeader from "../../components/AppHeader/AppHeader";
 import { getModels, createComparison } from "../../services/comparisonService";
 import { describeGeneralError, fieldErrorsFrom } from "../../services/format";
@@ -13,6 +13,7 @@ export default function Compare({ user, onLogout }) {
   const [modelB, setModelB] = useState("");
   const [executionState, setExecutionState] = useState("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [submitted, setSubmitted] = useState(false);
   const [modelsKey, setModelsKey] = useState(0);
   const [modelsResult, setModelsResult] = useState({ key: null, models: [], error: "" });
 
@@ -41,23 +42,27 @@ export default function Compare({ user, onLogout }) {
 
   const modelName = (id) => models.find((model) => model.id === id)?.name || "";
 
+  // Validation, shown only after the user tries to run
+  const missingPrompt = !promptText.trim();
+  const sameModels = Boolean(modelA) && modelA === modelB;
+  const missingParts = [];
+  if (missingPrompt) missingParts.push("enter a prompt");
+  if (!modelA && !modelB) missingParts.push("choose both models");
+  else if (!modelA) missingParts.push("choose Model A");
+  else if (!modelB) missingParts.push("choose Model B");
+  let validationMessage = "";
+  if (missingParts.length) validationMessage = `To run the comparison, please ${missingParts.join(" and ")}.`;
+  else if (sameModels) validationMessage = "Please choose two different models.";
+  const showValidation = submitted && Boolean(validationMessage);
+  const fieldClass = (base, invalid) => (submitted && invalid ? `${base} compare-field-invalid` : base);
+
+  const clearServerError = () => { if (errorMessage) setErrorMessage(""); };
+
   const handleRunComparison = async () => {
     if (executionState === "running") return;
 
-    if (!promptText.trim()) {
-      setErrorMessage("Please enter a prompt.");
-      return;
-    }
-
-    if (!modelA || !modelB) {
-      setErrorMessage("Please choose both models.");
-      return;
-    }
-
-    if (modelA === modelB) {
-      setErrorMessage("Please select two different models.");
-      return;
-    }
+    setSubmitted(true);
+    if (validationMessage) return;
 
     setErrorMessage("");
     setExecutionState("running");
@@ -96,33 +101,17 @@ export default function Compare({ user, onLogout }) {
           <section className="compare-form-section">
             <div className="compare-form-header">
               <h1 className="compare-form-title">New Comparison</h1>
-              <button
-                className="compare-btn-primary"
-                onClick={handleRunComparison}
-                disabled={executionState === "running" || isLoadingModels || Boolean(modelsError) || models.length < 2}
-              >
-                {isLoadingModels ? "Loading models..." : executionState === "running" ? "Running..." : "Run Comparison"}
-              </button>
             </div>
-
-            {!user && (
-              <p className="compare-guest-note" role="note">
-                You're not signed in. You can still run a comparison, but it won't be saved to your history.{" "}
-                <Link to="/login">Log in</Link> or <Link to="/register">create an account</Link> to keep your results.
-              </p>
-            )}
 
             <div className="compare-input-group">
               <label htmlFor="comparison-prompt">Prompt</label>
               <textarea
                 id="comparison-prompt"
-                className="compare-textarea"
+                className={fieldClass("compare-textarea", missingPrompt)}
+                aria-invalid={submitted && missingPrompt}
                 placeholder="Enter prompt..."
                 value={promptText}
-                onChange={(e) => {
-                  setPromptText(e.target.value);
-                  if (errorMessage) setErrorMessage("");
-                }}
+                onChange={(e) => { setPromptText(e.target.value); clearServerError(); }}
               />
             </div>
 
@@ -131,9 +120,10 @@ export default function Compare({ user, onLogout }) {
                 <label htmlFor="model-a">Model A</label>
                 <select
                   id="model-a"
-                  className="compare-select"
+                  className={fieldClass("compare-select", !modelA || sameModels)}
+                  aria-invalid={submitted && (!modelA || sameModels)}
                   value={modelA}
-                  onChange={(e) => { setModelA(e.target.value); if (errorMessage) setErrorMessage(""); }}
+                  onChange={(e) => { setModelA(e.target.value); clearServerError(); }}
                   disabled={isLoadingModels || Boolean(modelsError)}
                 >
                   <option value="">{isLoadingModels ? "Loading models..." : "Select model"}</option>
@@ -147,9 +137,10 @@ export default function Compare({ user, onLogout }) {
                 <label htmlFor="model-b">Model B</label>
                 <select
                   id="model-b"
-                  className="compare-select"
+                  className={fieldClass("compare-select", !modelB || sameModels)}
+                  aria-invalid={submitted && (!modelB || sameModels)}
                   value={modelB}
-                  onChange={(e) => { setModelB(e.target.value); if (errorMessage) setErrorMessage(""); }}
+                  onChange={(e) => { setModelB(e.target.value); clearServerError(); }}
                   disabled={isLoadingModels || Boolean(modelsError)}
                 >
                   <option value="">{isLoadingModels ? "Loading models..." : "Select model"}</option>
@@ -174,7 +165,18 @@ export default function Compare({ user, onLogout }) {
               <span>Evaluation Criteria: Predefined rubric</span>
             </div>
 
-            {errorMessage && <p className="compare-error-message" role="alert">{errorMessage}</p>}
+            {showValidation && <p className="compare-error-message" role="alert">{validationMessage}</p>}
+            {!showValidation && errorMessage && <p className="compare-error-message" role="alert">{errorMessage}</p>}
+
+            <div className="compare-form-actions">
+              <button
+                className="compare-btn-primary"
+                onClick={handleRunComparison}
+                disabled={executionState === "running" || isLoadingModels || Boolean(modelsError) || models.length < 2}
+              >
+                {isLoadingModels ? "Loading models..." : executionState === "running" ? "Running..." : "Run Comparison"}
+              </button>
+            </div>
           </section>
         </div>
 
@@ -182,11 +184,11 @@ export default function Compare({ user, onLogout }) {
           <div className="compare-status-header">
             <h2 className="compare-form-title" style={{ fontSize: "1.05rem" }}>Execution Status</h2>
           </div>
-          <p className="compare-status-message" role="status">
-            {executionState === "running"
-              ? "Both models are generating their answers, then the AI judge evaluates them. This can take up to a minute."
-              : "Choose two models, enter a prompt and run the comparison."}
-          </p>
+          {executionState === "running" && (
+            <p className="compare-status-message" role="status">
+              Both models are generating their answers, then the AI judge evaluates them. This can take up to a minute.
+            </p>
+          )}
 
           <div className="compare-results-grid">
             <div className="compare-result-card">
@@ -195,7 +197,7 @@ export default function Compare({ user, onLogout }) {
                 {executionState === "running" && <span className="compare-badge running">Running</span>}
               </div>
               <div className="compare-result-content">
-                <p className="compare-model-name">{modelName(modelA) || "No model selected"}</p>
+                <p className="compare-model-name">{modelName(modelA) || "—"}</p>
                 {executionState === "running" && <p className="compare-muted-text">Generating answer…</p>}
               </div>
             </div>
@@ -206,7 +208,7 @@ export default function Compare({ user, onLogout }) {
                 {executionState === "running" && <span className="compare-badge running">Running</span>}
               </div>
               <div className="compare-result-content">
-                <p className="compare-model-name">{modelName(modelB) || "No model selected"}</p>
+                <p className="compare-model-name">{modelName(modelB) || "—"}</p>
                 {executionState === "running" && <p className="compare-muted-text">Generating answer…</p>}
               </div>
             </div>

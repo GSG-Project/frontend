@@ -225,21 +225,6 @@
   font-weight: 500;
 }
 
-.compare-guest-note {
-  margin-bottom: var(--space-2);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius);
-  background: var(--color-tint);
-  color: var(--color-text-main);
-  font-size: 0.85rem;
-  line-height: 1.5;
-}
-
-.compare-guest-note a {
-  color: var(--color-primary);
-  font-weight: 600;
-  text-decoration: underline;
-}
 
 .compare-error-with-action {
   display: flex;
@@ -264,3 +249,11 @@
   border-color: var(--color-secondary);
   color: var(--color-primary);
 }
+
+.compare-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-2);
+}
+
+.compare-field-invalid { border-color: var(--color-danger); }
