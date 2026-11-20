@@ -294,97 +294,105 @@ Below the form, **Execution Status** shows a card for each model. It stays empty
 
 ![Execution status before running](docs/screenshots/06-guest-compare-status.png)
 
-The results appear right away, and a note explains that the comparison is not saved, with links to log in or create an account. **Rerun** is disabled because there is no saved experiment to run again.
+The model lists are loaded from the backend, so they always show the models that are currently active. The two models must be different.
+
+![Choosing the models](docs/screenshots/07-guest-model-select.png)
+
+After **Run Comparison**, the button shows **Running…** and cannot be clicked again. **Execution Status** shows that both models are generating their answers and that the AI judge evaluates them next. This can take up to a minute.
+
+![Comparison running](docs/screenshots/08-guest-compare-running.png)
+
+When the backend returns, the results page opens right away, and a note explains that the comparison is not saved, with links to log in or create an account. **Rerun** is disabled because there is no saved experiment to run again.
 
 The summary shows the quality score, latency and estimated cost of each model, followed by both answers side by side.
 
-![Guest comparison results](docs/screenshots/07-guest-results-summary.png)
+![Guest comparison results](docs/screenshots/09-guest-results-summary.png)
 
 The metrics table lists tokens (input / output), latency, estimated cost, quality and status for each model. A cost the backend does not report is shown as "Unavailable", not as zero.
 
-![Guest results metrics table](docs/screenshots/08-guest-results-metrics.png)
+![Guest results metrics table](docs/screenshots/10-guest-results-metrics.png)
 
 The quality evaluation shows the winner, the judge's reasoning, the score for each criterion (accuracy, relevance, clarity, completeness and overall) and the strengths and weaknesses of each answer.
 
-![Guest results quality evaluation](docs/screenshots/09-guest-results-evaluation.png)
+![Guest results quality evaluation](docs/screenshots/11-guest-results-evaluation.png)
 
 ### 3. Create an account (`/register`)
 
 To save comparisons, the visitor creates an account with a first name, an optional last name, an email and a password. The eye icon shows or hides the password. Problems such as an email that is already registered appear under the related field.
 
-![Register page](docs/screenshots/10-register.png)
+![Register page](docs/screenshots/12-register.png)
 
 ### 4. Log in (`/login`)
 
 The user signs in with email and password. The eye icon shows or hides the password while typing. Wrong credentials, connection problems and a slow server each get a clear message.
 
-![Login page](docs/screenshots/11-login.png)
+![Login page](docs/screenshots/13-login.png)
 
 ### 5. Comparison while signed in (`/compare` → `/results`)
 
 The signed-in header shows the user's name, **Profile** and **Sign Out**. The user writes a prompt, chooses Model A and Model B and clicks **Run Comparison**. If something is missing, the page names it and marks the field instead of sending the request.
 
-![Compare page](docs/screenshots/12-compare.png)
+![Compare page](docs/screenshots/14-compare.png)
 
 While the comparison runs, the button shows **Running…** and cannot be clicked again, so the same comparison is not sent twice.
 
-![Comparison running](docs/screenshots/13-compare-running.png)
+![Comparison running](docs/screenshots/15-compare-running.png)
 
 **Execution Status** shows that both models are generating their answers and that the AI judge evaluates them next.
 
-![Execution status while running](docs/screenshots/14-compare-running-status.png)
+![Execution status while running](docs/screenshots/16-compare-running-status.png)
 
 When the backend returns, the results page opens. The comparison is saved to the user's history, so **Rerun** is available and the page can be reopened later from its link.
 
-![Signed-in comparison results](docs/screenshots/15-results-summary.png)
+![Signed-in comparison results](docs/screenshots/17-results-summary.png)
 
 The metrics table and the quality evaluation show the same information as for a visitor.
 
-![Signed-in results metrics table](docs/screenshots/16-results-metrics.png)
+![Signed-in results metrics table](docs/screenshots/18-results-metrics.png)
 
-![Signed-in results quality evaluation](docs/screenshots/17-results-evaluation.png)
+![Signed-in results quality evaluation](docs/screenshots/19-results-evaluation.png)
 
 ### 6. History (`/experiments`)
 
 History lists the user's saved experiments, newest first, with the prompt, the two models, the winner of the latest run, the number of runs and the date. **View** opens an experiment and **Delete** removes it after confirmation.
 
-![History page](docs/screenshots/18-history.png)
+![History page](docs/screenshots/20-history.png)
 
 ### 7. Experiment details (`/experiments/:id`)
 
 The header shows the prompt, the models, the creation date and the number of runs. The runs table lists every run with its date and status; the selected run is marked **Viewing**. **Run Again** runs the same experiment again on the backend and adds a new run (here, Run #2) without changing earlier runs.
 
-![Experiment details and runs](docs/screenshots/19-details-runs.png)
+![Experiment details and runs](docs/screenshots/21-details-runs.png)
 
 **Model responses** shows both answers side by side, with each model's status and the winner badge.
 
-![Model responses](docs/screenshots/20-details-responses.png)
+![Model responses](docs/screenshots/22-details-responses.png)
 
 **Technical performance** lists latency, input, output and total tokens and cost for each model. **AI Judge** shows the winner, the reasoning, the judge model and the criteria scores.
 
-![Technical performance and AI judge](docs/screenshots/21-details-performance-judge.png)
+![Technical performance and AI judge](docs/screenshots/23-details-performance-judge.png)
 
 The strengths and weaknesses of each answer appear below the scores.
 
-![Strengths and weaknesses](docs/screenshots/22-details-strengths-weaknesses.png)
+![Strengths and weaknesses](docs/screenshots/24-details-strengths-weaknesses.png)
 
 ### 8. Profile (`/profile`)
 
 The profile page shows the user's name and email, with sections for personal information, password and signing out.
 
-![Profile page](docs/screenshots/23-profile.png)
+![Profile page](docs/screenshots/25-profile.png)
 
 **Edit Profile** makes the first and last name editable. The email cannot be changed.
 
-![Editing the profile](docs/screenshots/24-profile-edit.png)
+![Editing the profile](docs/screenshots/26-profile-edit.png)
 
 **Change Password** asks for the current password and the new one twice. The eye icon on each field shows or hides what was typed.
 
-![Change password form](docs/screenshots/25-change-password.png)
+![Change password form](docs/screenshots/27-change-password.png)
 
 A confirmation appears when the password has been changed.
 
-![Password changed](docs/screenshots/26-password-changed.png)
+![Password changed](docs/screenshots/28-password-changed.png)
 
 ---
 
