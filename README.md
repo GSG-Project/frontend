@@ -16,8 +16,9 @@ This repository contains the frontend only. The backend (API, model providers, A
 6. [Environment Variables](#environment-variables)
 7. [Backend Integration](#backend-integration)
 8. [Application Workflow](#application-workflow)
-9. [Responsive Design](#responsive-design)
-10. [Known Limitations and Planned Work](#known-limitations-and-planned-work)
+9. [Screenshots](#screenshots)
+10. [Responsive Design](#responsive-design)
+11. [Known Limitations and Planned Work](#known-limitations-and-planned-work)
 
 ---
 
@@ -258,6 +259,132 @@ Landing (/) ──► Register (/register) or Login (/login)
 6. **Profile.** `/profile` lets the user change their name and password, or sign out.
 
 **Signed-out users:** the header shows "Log In" and "Sign Up". History, Experiment Details and Profile show a prompt to sign in or create an account. The Compare page works without an account; such comparisons are shown right away but are not saved, so they do not appear in History and cannot be run again. A note on the Results page says so.
+
+---
+
+## Screenshots
+
+The screenshots follow the order in which a user moves through the app: first as a visitor without an account, then signed in.
+
+### 1. Landing page (`/`)
+
+The first screen introduces ModelJudge: one prompt, two models and a clear verdict. **Get Started** opens the comparison page right away, without an account, and **Log In** opens the login page. The top bar links to the page sections and to **Log In** and **Sign Up**.
+
+![Landing page hero](docs/screenshots/01-landing-hero.png)
+
+**How it works** explains the six steps of the product, from choosing the models to running an experiment again.
+
+![How it works section](docs/screenshots/02-landing-how-it-works.png)
+
+**Why ModelJudge** lists what the app offers: a fair comparison on the same prompt, side-by-side answers, an independent judge, measurable performance and a saved history. Visitors also get a button to create a free account.
+
+![Why ModelJudge section](docs/screenshots/03-landing-why-modeljudge.png)
+
+The footer repeats the main links.
+
+![Landing page footer](docs/screenshots/04-landing-footer.png)
+
+### 2. Comparison without an account (`/compare` → `/results`)
+
+A visitor can run a comparison without signing in. The header shows **Log In** and **Sign Up** instead of the user's name. The visitor writes a prompt, chooses Model A and Model B from the models the backend offers and clicks **Run Comparison**.
+
+![Compare page for a visitor](docs/screenshots/05-guest-compare.png)
+
+Below the form, **Execution Status** shows a card for each model. It stays empty until a comparison starts.
+
+![Execution status before running](docs/screenshots/06-guest-compare-status.png)
+
+The results appear right away, and a note explains that the comparison is not saved, with links to log in or create an account. **Rerun** is disabled because there is no saved experiment to run again.
+
+The summary shows the quality score, latency and estimated cost of each model, followed by both answers side by side.
+
+![Guest comparison results](docs/screenshots/07-guest-results-summary.png)
+
+The metrics table lists tokens (input / output), latency, estimated cost, quality and status for each model. A cost the backend does not report is shown as "Unavailable", not as zero.
+
+![Guest results metrics table](docs/screenshots/08-guest-results-metrics.png)
+
+The quality evaluation shows the winner, the judge's reasoning, the score for each criterion (accuracy, relevance, clarity, completeness and overall) and the strengths and weaknesses of each answer.
+
+![Guest results quality evaluation](docs/screenshots/09-guest-results-evaluation.png)
+
+### 3. Create an account (`/register`)
+
+To save comparisons, the visitor creates an account with a first name, an optional last name, an email and a password. The eye icon shows or hides the password. Problems such as an email that is already registered appear under the related field.
+
+![Register page](docs/screenshots/10-register.png)
+
+### 4. Log in (`/login`)
+
+The user signs in with email and password. The eye icon shows or hides the password while typing. Wrong credentials, connection problems and a slow server each get a clear message.
+
+![Login page](docs/screenshots/11-login.png)
+
+### 5. Comparison while signed in (`/compare` → `/results`)
+
+The signed-in header shows the user's name, **Profile** and **Sign Out**. The user writes a prompt, chooses Model A and Model B and clicks **Run Comparison**. If something is missing, the page names it and marks the field instead of sending the request.
+
+![Compare page](docs/screenshots/12-compare.png)
+
+While the comparison runs, the button shows **Running…** and cannot be clicked again, so the same comparison is not sent twice.
+
+![Comparison running](docs/screenshots/13-compare-running.png)
+
+**Execution Status** shows that both models are generating their answers and that the AI judge evaluates them next.
+
+![Execution status while running](docs/screenshots/14-compare-running-status.png)
+
+When the backend returns, the results page opens. The comparison is saved to the user's history, so **Rerun** is available and the page can be reopened later from its link.
+
+![Signed-in comparison results](docs/screenshots/15-results-summary.png)
+
+The metrics table and the quality evaluation show the same information as for a visitor.
+
+![Signed-in results metrics table](docs/screenshots/16-results-metrics.png)
+
+![Signed-in results quality evaluation](docs/screenshots/17-results-evaluation.png)
+
+### 6. History (`/experiments`)
+
+History lists the user's saved experiments, newest first, with the prompt, the two models, the winner of the latest run, the number of runs and the date. **View** opens an experiment and **Delete** removes it after confirmation.
+
+![History page](docs/screenshots/18-history.png)
+
+### 7. Experiment details (`/experiments/:id`)
+
+The header shows the prompt, the models, the creation date and the number of runs. The runs table lists every run with its date and status; the selected run is marked **Viewing**. **Run Again** runs the same experiment again on the backend and adds a new run (here, Run #2) without changing earlier runs.
+
+![Experiment details and runs](docs/screenshots/19-details-runs.png)
+
+**Model responses** shows both answers side by side, with each model's status and the winner badge.
+
+![Model responses](docs/screenshots/20-details-responses.png)
+
+**Technical performance** lists latency, input, output and total tokens and cost for each model. **AI Judge** shows the winner, the reasoning, the judge model and the criteria scores.
+
+![Technical performance and AI judge](docs/screenshots/21-details-performance-judge.png)
+
+The strengths and weaknesses of each answer appear below the scores.
+
+![Strengths and weaknesses](docs/screenshots/22-details-strengths-weaknesses.png)
+
+### 8. Profile (`/profile`)
+
+The profile page shows the user's name and email, with sections for personal information, password and signing out.
+
+![Profile page](docs/screenshots/23-profile.png)
+
+**Edit Profile** makes the first and last name editable. The email cannot be changed.
+
+![Editing the profile](docs/screenshots/24-profile-edit.png)
+
+**Change Password** asks for the current password and the new one twice. The eye icon on each field shows or hides what was typed.
+
+![Change password form](docs/screenshots/25-change-password.png)
+
+A confirmation appears when the password has been changed.
+
+![Password changed](docs/screenshots/26-password-changed.png)
 
 ---
 
