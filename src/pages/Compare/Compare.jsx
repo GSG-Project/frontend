@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AppHeader from "../../components/AppHeader/AppHeader";
+import ModelSelect from "../../components/ModelSelect/ModelSelect";
 import { getModels, createComparison } from "../../services/comparisonService";
 import { describeGeneralError, fieldErrorsFrom } from "../../services/format";
 import "./Compare.css";
@@ -118,36 +119,34 @@ export default function Compare({ user, onLogout }) {
             <div className="compare-selectors-row">
               <div className="compare-input-group" style={{ marginBottom: 0 }}>
                 <label htmlFor="model-a">Model A</label>
-                <select
+                <ModelSelect
                   id="model-a"
-                  className={fieldClass("compare-select", !modelA || sameModels)}
-                  aria-invalid={submitted && (!modelA || sameModels)}
+                  label="Model A"
+                  invalid={submitted && (!modelA || sameModels)}
+                  models={models}
                   value={modelA}
-                  onChange={(e) => { setModelA(e.target.value); clearServerError(); }}
+                  onChange={(id) => { setModelA(id); clearServerError(); }}
+                  unavailableId={modelB}
+                  unavailableNote="Model B"
+                  placeholder={isLoadingModels ? "Loading models..." : "Select model"}
                   disabled={isLoadingModels || Boolean(modelsError)}
-                >
-                  <option value="">{isLoadingModels ? "Loading models..." : "Select model"}</option>
-                  {models.map((model) => (
-                    <option key={model.id} value={model.id}>{model.name}</option>
-                  ))}
-                </select>
+                />
               </div>
 
               <div className="compare-input-group" style={{ marginBottom: 0 }}>
                 <label htmlFor="model-b">Model B</label>
-                <select
+                <ModelSelect
                   id="model-b"
-                  className={fieldClass("compare-select", !modelB || sameModels)}
-                  aria-invalid={submitted && (!modelB || sameModels)}
+                  label="Model B"
+                  invalid={submitted && (!modelB || sameModels)}
+                  models={models}
                   value={modelB}
-                  onChange={(e) => { setModelB(e.target.value); clearServerError(); }}
+                  onChange={(id) => { setModelB(id); clearServerError(); }}
+                  unavailableId={modelA}
+                  unavailableNote="Model A"
+                  placeholder={isLoadingModels ? "Loading models..." : "Select model"}
                   disabled={isLoadingModels || Boolean(modelsError)}
-                >
-                  <option value="">{isLoadingModels ? "Loading models..." : "Select model"}</option>
-                  {models.map((model) => (
-                    <option key={model.id} value={model.id}>{model.name}</option>
-                  ))}
-                </select>
+                />
               </div>
             </div>
 
