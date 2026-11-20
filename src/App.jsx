@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { getCurrentUser } from "./services/authService";
 import { SESSION_EXPIRED_EVENT } from "./services/api";
 
@@ -10,6 +10,7 @@ import Compare from "./pages/Compare/Compare";
 import ComparisonResults from "./pages/ComparisonResults/ComparisonResults";
 import Profile from "./pages/Profile/Profile";
 import Experiments from "./pages/Experiments/Experiments";
+import NotFound from "./pages/NotFound/NotFound";
 import ExperimentDetails from "./pages/ExperimentDetails/ExperimentDetails";
 
 function App() {
@@ -75,7 +76,7 @@ function App() {
         <Route path="/experiments" element={<Experiments user={user} onLogout={handleLogout} />} />
         <Route path="/experiments/:experimentId" element={<ExperimentDetails user={user} onLogout={handleLogout} />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
