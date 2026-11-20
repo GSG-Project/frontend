@@ -1,6 +1,14 @@
 const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
 
-const AUTH_ENDPOINTS = ["/api/auth/login/", "/api/auth/register/", "/api/auth/refresh/"];
+const AUTH_ENDPOINTS = [
+  "/api/auth/login/",
+  "/api/auth/login/verify/",
+  "/api/auth/login/resend/",
+  "/api/auth/register/",
+  "/api/auth/refresh/",
+  "/api/auth/password-reset/",
+  "/api/auth/password-reset/confirm/",
+];
 
 export const SESSION_EXPIRED_EVENT = "auth:session-expired";
 
