@@ -84,7 +84,11 @@ There is no global state library and no automated test runner in this repository
 
 ```text
 frontend/
-├── index.html                  # HTML entry point
+├── index.html                  # HTML entry point, page title and favicon link
+├── public/
+│   └── favicon.svg             # Site icon
+├── docs/
+│   └── screenshots/            # Images used in this README
 ├── vite.config.js              # Vite config, including the /api proxy for development
 ├── .env.example                # Example environment variables
 ├── .oxlintrc.json              # Lint rules
