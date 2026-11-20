@@ -44,10 +44,12 @@ Every comparison made while signed in is saved as an **experiment**. An experime
 |---|---|
 | **Landing page** (`/`) | Read what ModelJudge does, see the six-step "How it works" flow and the main benefits, and start right away: "Get Started" opens the comparison page without an account. Sign up and log in are one click away. Signed-in users get a direct link into the app. |
 | **Registration** (`/register`) | Create an account with first name, optional last name, email and password. Backend validation errors are shown under the related field in plain language. The password can be shown or hidden while typing. |
-| **Login** (`/login`) | Sign in with email and password, with a show/hide password control. Wrong credentials, connection problems and a slow server each get a clear message. The user's name is loaded from the account after login. |
+| **Login** (`/login`) | Sign in with email and password, with a show/hide password control. Wrong credentials, connection problems and a slow server each get a clear message. The user's name is loaded from the account after login. A **Forgot your password?** link leads to the password reset. When two-step verification is on, the user also enters a 6 digit code sent by email, and can ask for a new code after a short wait. |
+| **Forgot password** (`/forgot-password`) | Enter the account email to receive a link for choosing a new password. The page confirms that the email was sent without saying whether the account exists, and reminds the user that the link works for one hour. |
+| **Reset password** (`/reset-password?uid=<uid>&token=<token>`) | Opened from the emailed link. The user enters the new password twice, with show/hide controls. An incomplete, expired or already used link gets a clear message and a way to request a new one. After the change, a button leads back to sign in. |
 | **Guest comparisons** | Visitors can run a comparison without an account. The Results page notes that it was not saved, with links to log in or sign up. |
 | **Session handling** | The session is renewed automatically when the access token expires. If renewal is no longer possible, the user is signed out. |
-| **Model selection** (`/compare`) | Choose two different models from the list returned by the backend. Inactive models are not offered. |
+| **Model selection** (`/compare`) | Choose two different models from the list returned by the backend. Inactive models are not offered. The model lists are custom dropdowns that group the models by provider (for example Google Gemini, Groq, OpenRouter) and mark the model already chosen in the other list as unavailable. They can be used with the keyboard (arrow keys, Home/End, Enter, Escape and typing a name). |
 | **Prompt submission** (`/compare`) | Enter a prompt and run the comparison. The button is disabled while a comparison is running, so it cannot be submitted twice. |
 | **Comparison results** (`/results?experiment=<id>&run=<id>`) | See both answers side by side, the status of each model, a metrics table, and the judge's evaluation. A failed model shows a short error message while the other answer stays visible. The link identifies the experiment and run, so the page can be refreshed, reopened or bookmarked by the signed-in owner. |
 | **AI evaluation** | Winner, reasoning, a table of the four criteria plus the overall score, and strengths and weaknesses per model. When there is no evaluation (for example, one model failed), the backend's explanation is shown. |
@@ -57,7 +59,8 @@ Every comparison made while signed in is saved as an **experiment**. An experime
 | **Delete experiment** | Delete an experiment from the history after confirming in a dialog. |
 | **Experiment details** (`/experiments/:experimentId`) | Experiment summary (prompt, models, date, run count), a table of all runs, and for the selected run: model responses, performance metrics and the AI judge section. The selected run is kept in the URL (`?run=<id>`). |
 | **Run again** | Execute an experiment again from its details page. The new run is saved under the same experiment and opened automatically. |
-| **User profile** (`/profile`) | View the account, edit first and last name, change the password, and sign out. The email cannot be changed. |
+| **User profile** (`/profile`) | View the account, edit first and last name, change the password, turn two-step verification on or off, and sign out. The email cannot be changed. |
+| **Two-step verification** (`/profile`) | Turning it on asks for the current password, then for a 6 digit code sent to the account email. Turning it off asks for the password. While it is on, every sign-in needs a code from the email. |
 | **Navigation** | A header on desktop, a collapsible side panel on tablet, and a slide-in drawer on mobile. The ModelJudge logo always links back to the home page. |
 | **Loading, empty and error states** | Pages show clear, human-readable states for loading, no data, expired sessions, missing experiments, connection failures, timeouts and server errors. The model list can be reloaded with "Try again" if it fails to load. |
 
@@ -99,20 +102,25 @@ frontend/
     ├── assets/                 # Static assets imported by components (currently empty)
     ├── components/
     │   ├── AppHeader/          # Header, tablet side panel and mobile drawer
+    │   ├── CodeInput/          # 6 digit code field for emailed codes
     │   ├── ConfirmDialog/      # Reusable confirmation dialog
-    │   └── PageState/          # Loading, empty and error messages
+    │   ├── ModelSelect/        # Model dropdown grouped by provider
+    │   ├── PageState/          # Loading, empty and error messages
+    │   └── PasswordInput/      # Password field with a show/hide button
     ├── pages/
     │   ├── Landing/            # Public home page
-    │   ├── Login/              # Sign in
+    │   ├── Login/              # Sign in, including the emailed code step
+    │   ├── ForgotPassword/     # Ask for a password reset email
+    │   ├── ResetPassword/      # Choose a new password from the emailed link
     │   ├── Register/           # Create an account
     │   ├── Compare/            # Model selection and prompt submission
     │   ├── ComparisonResults/  # Results of the latest comparison
     │   ├── Experiments/        # Experiment history
     │   ├── ExperimentDetails/  # One experiment and its runs
-    │   └── Profile/            # Account details and password
+    │   └── Profile/            # Account details, password and two-step verification
     ├── services/
     │   ├── api.js              # HTTP client: auth header, token renewal, timeouts, errors
-    │   ├── authService.js      # Register, login, current user, profile, password
+    │   ├── authService.js      # Register, login and codes, current user, profile, password, reset, two-step verification
     │   ├── comparisonService.js# Models list and new comparisons
     │   ├── experimentService.js# History, details, delete, rerun
     │   ├── normalize.js        # Turns backend payloads into view models for the pages
@@ -200,7 +208,7 @@ All requests go through `apiRequest()` in `src/services/api.js`:
 
 - **Base URL:** `VITE_API_BASE_URL` + the endpoint path (for example `/api/models/`). In development the Vite proxy forwards `/api` to `VITE_API_PROXY_TARGET`.
 - **Authentication:** JWT bearer tokens. When an access token exists, every request sends `Authorization: Bearer <access>`.
-- **Token renewal:** if a request returns `401`, the client calls `POST /api/auth/refresh/` once and repeats the request with the new token. Requests that fail at the same moment share a single refresh call. Login, register and refresh themselves are never retried. If the refresh token is rejected, the session is cleared and the app signs the user out.
+- **Token renewal:** if a request returns `401`, the client calls `POST /api/auth/refresh/` once and repeats the request with the new token. Requests that fail at the same moment share a single refresh call. Login, register and refresh themselves are never retried, and neither are the sign-in code and password reset requests. If the refresh token is rejected, the session is cleared and the app signs the user out.
 - **Timeouts:** 60 seconds by default; 180 seconds for rerunning an experiment, which waits for both models and the judge.
 - **Errors:** failed requests throw an `Error` with `status` (HTTP status) and `data` (the parsed response body). Field errors from the backend (`{ "email": ["..."] }`) are mapped to the matching form fields. HTML error pages from the server are replaced by a readable message.
 
@@ -219,11 +227,18 @@ The current user is loaded from `GET /api/auth/me/` when the app starts and afte
 | Method | Endpoint | Purpose | Auth | Used in |
 |---|---|---|---|---|
 | `POST` | `/api/auth/register/` | Create an account (`email`, `first_name`, `last_name`, `password`); returns the user and tokens | None | Register |
-| `POST` | `/api/auth/login/` | Exchange email and password for `access` and `refresh` tokens | None | Login |
+| `POST` | `/api/auth/login/` | Exchange email and password for `access` and `refresh` tokens. When two-step verification is on, it answers `202` with `requires_2fa`, a `challenge`, the `email` and `resend_after` instead | None | Login |
+| `POST` | `/api/auth/login/verify/` | Finish a two-step sign-in (`challenge`, `code`); returns the tokens | None | Login |
+| `POST` | `/api/auth/login/resend/` | Email a new sign-in code (`challenge`); `429` if asked again too soon | None | Login |
+| `POST` | `/api/auth/password-reset/` | Email a password reset link (`email`) | None | Forgot Password |
+| `POST` | `/api/auth/password-reset/confirm/` | Set a new password from the link (`uid`, `token`, `new_password`) | None | Reset Password |
 | `POST` | `/api/auth/refresh/` | Get a new access token from the refresh token | Refresh token in body | `api.js` |
-| `GET` | `/api/auth/me/` | Current user (`id`, `email`, `first_name`, `last_name`) | Bearer | App start-up, Login |
+| `GET` | `/api/auth/me/` | Current user (`id`, `email`, `first_name`, `last_name`, `two_factor_enabled`) | Bearer | App start-up, Login |
 | `PATCH` | `/api/auth/me/` | Update `first_name` and/or `last_name` | Bearer | Profile |
 | `POST` | `/api/auth/change-password/` | Change the password (`old_password`, `new_password`) | Bearer | Profile |
+| `POST` | `/api/auth/two-factor/enable/` | Start turning on two-step verification (`password`); emails a code | Bearer | Profile |
+| `POST` | `/api/auth/two-factor/confirm/` | Turn it on with the emailed `code`; returns the updated user | Bearer | Profile |
+| `POST` | `/api/auth/two-factor/disable/` | Turn it off (`password`); returns the updated user | Bearer | Profile |
 | `GET` | `/api/models/` | Models available for comparison | None | Compare |
 | `POST` | `/api/comparisons/` | Run a comparison (`prompt`, `model_ids`) and get both answers, metrics and the evaluation | Optional (when signed in, the experiment is saved to the account) | Compare |
 | `GET` | `/api/experiments/?page=&page_size=` | The user's experiments, paginated (20 per page) | Bearer | History |
@@ -242,8 +257,9 @@ The current user is loaded from `GET /api/auth/me/` when the app starts and afte
 ## Application Workflow
 
 ```text
-Landing (/) ──► Register (/register) or Login (/login)
-                         │
+Landing (/) ──► Register (/register) or Login (/login) ──► emailed code (if two-step verification is on)
+                         │          │
+                         │          └── Forgot password (/forgot-password) ──► email ──► Reset password (/reset-password) ──► Login
                          ▼
                  Compare (/compare)  ──run──►  Results (/results)
                          ▲                         │
@@ -255,12 +271,12 @@ Landing (/) ──► Register (/register) or Login (/login)
                          └── Delete (with confirmation)     └── Run Again ──► new run opens
 ```
 
-1. **Start.** Visitors land on `/`. "Get Started" opens `/compare` straight away, without an account. "Log In" and "Sign Up" are available in the header. After signing in, the user arrives at `/compare`.
+1. **Start.** Visitors land on `/`. "Get Started" opens `/compare` straight away, without an account. "Log In" and "Sign Up" are available in the header. After signing in, the user arrives at `/compare`. If two-step verification is on, the user first enters the 6 digit code sent by email. A user who forgot the password uses **Forgot your password?** on the login page, receives a link by email, chooses a new password on `/reset-password` and signs in again.
 2. **Compare.** The user writes a prompt, chooses Model A and Model B (two different models) and clicks **Run Comparison**. The request is synchronous: the page shows a running state until the backend returns both answers and the evaluation.
 3. **Results.** `/results?experiment=<id>&run=<id>` shows a summary (quality, latency, estimated cost), both answers side by side, a metrics table and the quality evaluation (winner, reasoning, criteria scores, strengths and weaknesses). Right after a comparison the page uses the data it just received; when it is opened from the link later (refresh, new tab, bookmark), it loads the saved run with `GET /api/experiments/{id}/`. **Rerun** saves a new run of the same experiment, shows its results and updates the link.
 4. **History.** `/experiments` lists saved experiments with their models, latest winner, run count and date. **View** opens an experiment; **Delete** removes it after confirmation.
 5. **Experiment details.** The page shows the experiment summary and a table of runs (newest first, numbered from the oldest). Selecting a run shows its model responses, technical performance and AI judge evaluation. **Run Again** creates a new run and opens it.
-6. **Profile.** `/profile` lets the user change their name and password, or sign out.
+6. **Profile.** `/profile` lets the user change their name and password, turn two-step verification on or off, or sign out.
 
 **Signed-out users:** the header shows "Log In" and "Sign Up". History, Experiment Details and Profile show a prompt to sign in or create an account. The Compare page works without an account; such comparisons are shown right away but are not saved, so they do not appear in History and cannot be run again. A note on the Results page says so.
 
@@ -298,7 +314,7 @@ Below the form, **Execution Status** shows a card for each model. It stays empty
 
 ![Execution status before running](docs/screenshots/06-guest-compare-status.png)
 
-The model lists are loaded from the backend, so they always show the models that are currently active. The two models must be different.
+The model lists are loaded from the backend, so they always show the models that are currently active. They are grouped by provider, and the model already chosen in the other list is marked as unavailable, because the two models must be different.
 
 ![Choosing the models](docs/screenshots/07-guest-model-select.png)
 
@@ -328,9 +344,29 @@ To save comparisons, the visitor creates an account with a first name, an option
 
 ### 4. Log in (`/login`)
 
-The user signs in with email and password. The eye icon shows or hides the password while typing. Wrong credentials, connection problems and a slow server each get a clear message.
+The user signs in with email and password. The eye icon shows or hides the password while typing. Wrong credentials, connection problems and a slow server each get a clear message. Below the button, **Forgot your password?** starts the password reset and **No account yet? Register** opens the registration page.
 
 ![Login page](docs/screenshots/13-login.png)
+
+If two-step verification is on for the account, the next screen asks for the 6 digit code sent to the user's email. **Send a new code** becomes available after a short countdown.
+
+#### Reset a forgotten password (`/forgot-password` → `/reset-password`)
+
+**Forgot your password?** opens a page that asks for the account email. **Send reset link** asks the backend to email a link for choosing a new password.
+
+![Forgot password page](docs/screenshots/13a-forgot-password.png)
+
+The page then confirms that the email was sent. For privacy, it does not say whether an account exists for that email. The link works for one hour.
+
+![Reset link sent](docs/screenshots/13b-reset-link-sent.png)
+
+The link in the email opens **Choose a new password**. The user types the new password twice; the eye icons show or hide it. If the link is incomplete, expired or already used, the page says so and offers to send a new link.
+
+![Choose a new password](docs/screenshots/13c-choose-new-password.png)
+
+After the change, **Go to sign in** leads back to the login page, where the user signs in with the new password.
+
+![Password reset complete](docs/screenshots/13d-password-reset-done.png)
 
 ### 5. Comparison while signed in (`/compare` → `/results`)
 
@@ -382,7 +418,7 @@ The strengths and weaknesses of each answer appear below the scores.
 
 ### 8. Profile (`/profile`)
 
-The profile page shows the user's name and email, with sections for personal information, password and signing out.
+The profile page shows the user's name and email, with sections for personal information, password, two-step verification and signing out.
 
 ![Profile page](docs/screenshots/25-profile.png)
 
@@ -397,6 +433,14 @@ The profile page shows the user's name and email, with sections for personal inf
 A confirmation appears when the password has been changed.
 
 ![Password changed](docs/screenshots/28-password-changed.png)
+
+**Two-step verification** shows whether it is on or off. While it is off, **Turn on** starts setting it up.
+
+![Two-step verification off](docs/screenshots/28a-two-step-off.png)
+
+**Turn on** first asks the user to confirm their password. **Send me a code** emails a 6 digit code, and entering that code turns two-step verification on. From then on, every sign-in also needs a code from the email. **Turn off** asks for the password only.
+
+![Confirming the password to turn on two-step verification](docs/screenshots/28b-two-step-confirm-password.png)
 
 ---
 
@@ -428,4 +472,3 @@ The following items are present in the code but not complete, or are not impleme
 | **Results of signed-out comparisons** | A comparison made without signing in is shown right after it runs, but cannot be reopened later from its link, because it is not saved to an account. |
 | **Number of models** | The Compare page selects exactly two models. |
 | **Route protection** | There are no route guards. Pages that need an account show a sign-in prompt instead. |
-| **Forgotten password** | A signed-in user can change their password from the Profile page, but there is no "Forgot password" flow to reset it from the login page. |
