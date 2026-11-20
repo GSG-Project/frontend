@@ -360,6 +360,10 @@ The page then confirms that the email was sent. For privacy, it does not say whe
 
 ![Reset link sent](docs/screenshots/13b-reset-link-sent.png)
 
+The email greets the user by first name and contains a **Choose a new password** button, plus the same link as text for pasting into the browser. The link points to the app's `/reset-password` page and carries the `uid` and `token` the backend needs. If the user did not ask for a reset, they can ignore the email.
+
+![Password reset email](docs/screenshots/13b2-reset-email.png)
+
 The link in the email opens **Choose a new password**. The user types the new password twice; the eye icons show or hide it. If the link is incomplete, expired or already used, the page says so and offers to send a new link.
 
 ![Choose a new password](docs/screenshots/13c-choose-new-password.png)
