@@ -10,6 +10,8 @@ import Compare from "./pages/Compare/Compare";
 import ComparisonResults from "./pages/ComparisonResults/ComparisonResults";
 import Profile from "./pages/Profile/Profile";
 import Experiments from "./pages/Experiments/Experiments";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import ExperimentDetails from "./pages/ExperimentDetails/ExperimentDetails";
 
 function App() {
@@ -66,6 +68,8 @@ function App() {
         <Route path="/" element={<Landing user={user} />} />
 
         <Route path="/login" element={<Login setUser={setUser} />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/register" element={<Register setUser={setUser} />} />
 
         <Route path="/compare" element={<Compare user={user} onLogout={handleLogout} />} />

@@ -112,3 +112,15 @@ export function describeLoadError(error) {
   if (error?.status === 404) return "This experiment does not exist or does not belong to your account.";
   return describeGeneralError(error, "Something went wrong while loading. Please try again.");
 }
+
+// Message for a wrong, expired or used-up emailed code (the server sends `error` and `code`).
+export function describeCodeError(error) {
+  const reason = error?.data?.error;
+  if (error?.status === 401) return "This sign-in has expired. Please sign in again.";
+  if (error?.status === 429) return "A code was sent a moment ago. Please wait a few seconds before asking for another.";
+  if (reason === "invalid") return "That code is not correct. Check it and try again.";
+  if (reason === "expired") return "This code has expired. Ask for a new one.";
+  if (reason === "too_many_attempts") return "Too many wrong attempts. Ask for a new code.";
+  if (reason === "no_code") return "This code was already used or replaced. Ask for a new one.";
+  return describeGeneralError(error, "The code could not be checked. Please try again.");
+}

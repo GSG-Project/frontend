@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AppHeader from "../../components/AppHeader/AppHeader";
-import { changePassword, updateProfile } from "../../services/authService";
+import CodeInput from "../../components/CodeInput/CodeInput";
+import "../../components/CodeInput/CodeInput.css";
+import {
+  changePassword, confirmTwoFactor, disableTwoFactor, startTwoFactor, updateProfile,
+} from "../../services/authService";
 import PasswordInput from "../../components/PasswordInput/PasswordInput";
-import { describeGeneralError, fieldErrorsFrom, formatUserName, getUserInitials } from "../../services/format";
+import { describeCodeError, describeGeneralError, fieldErrorsFrom, formatUserName, getUserInitials } from "../../services/format";
 import "./Profile.css";
 
 const EMPTY_PASSWORDS = { oldPassword: "", newPassword: "", confirmPassword: "" };
@@ -108,6 +112,68 @@ export default function Profile({ user, setUser, onLogout }) {
       }
     } finally {
       setIsSavingPassword(false);
+    }
+  };
+
+  // Two-step verification: "idle" -> ask for the password ("password") -> ask for the emailed code ("code").
+  const [twoFactorStep, setTwoFactorStep] = useState("idle");
+  const [twoFactorPassword, setTwoFactorPassword] = useState("");
+  const [twoFactorCode, setTwoFactorCode] = useState("");
+  const [twoFactorBusy, setTwoFactorBusy] = useState(false);
+  const [twoFactorMessage, setTwoFactorMessage] = useState(null);
+
+  const resetTwoFactor = () => {
+    setTwoFactorStep("idle");
+    setTwoFactorPassword("");
+    setTwoFactorCode("");
+  };
+
+  const submitTwoFactorPassword = async (event) => {
+    event.preventDefault();
+    if (twoFactorBusy) return;
+    if (!twoFactorPassword) {
+      setTwoFactorMessage({ tone: "error", text: "Enter your password." });
+      return;
+    }
+    setTwoFactorBusy(true);
+    setTwoFactorMessage(null);
+    try {
+      if (user.two_factor_enabled) {
+        setUser(await disableTwoFactor(twoFactorPassword));
+        resetTwoFactor();
+        setTwoFactorMessage({ tone: "success", text: "Two-step verification is off." });
+      } else {
+        await startTwoFactor(twoFactorPassword);
+        setTwoFactorStep("code");
+        setTwoFactorMessage({ tone: "success", text: "We sent a 6 digit code to your email. Check your spam folder too." });
+      }
+    } catch (error) {
+      const text = fieldErrorsFrom(error).password || (error?.status === 429
+        ? "A code was sent a moment ago. Please wait a few seconds."
+        : generalError(error, "That did not work. Please try again."));
+      setTwoFactorMessage({ tone: "error", text });
+    } finally {
+      setTwoFactorBusy(false);
+    }
+  };
+
+  const submitTwoFactorCode = async (event) => {
+    event.preventDefault();
+    if (twoFactorBusy) return;
+    if (twoFactorCode.length !== 6) {
+      setTwoFactorMessage({ tone: "error", text: "Enter the 6 digit code from the email." });
+      return;
+    }
+    setTwoFactorBusy(true);
+    setTwoFactorMessage(null);
+    try {
+      setUser(await confirmTwoFactor(twoFactorCode));
+      resetTwoFactor();
+      setTwoFactorMessage({ tone: "success", text: "Two-step verification is on. You will get a code by email each time you sign in." });
+    } catch (error) {
+      setTwoFactorMessage({ tone: "error", text: describeCodeError(error) });
+    } finally {
+      setTwoFactorBusy(false);
     }
   };
 
@@ -287,6 +353,81 @@ export default function Profile({ user, setUser, onLogout }) {
                       {isSavingPassword ? "Saving…" : "Update Password"}
                     </button>
                     <button type="button" className="profile-btn-outline" onClick={closePasswordForm} disabled={isSavingPassword}>
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+
+            <div className="profile-card">
+              <h2 className="profile-card-title">Two-step verification</h2>
+
+              {twoFactorMessage && (
+                <p className={`profile-message profile-message-${twoFactorMessage.tone}`} role={twoFactorMessage.tone === "error" ? "alert" : "status"}>
+                  {twoFactorMessage.text}
+                </p>
+              )}
+
+              {twoFactorStep === "idle" && (
+                <>
+                  <p className="profile-security-text">
+                    {user.two_factor_enabled
+                      ? "On. A code is emailed to you each time you sign in."
+                      : "Off. Turn it on to also need a code from your email when you sign in."}
+                  </p>
+                  <button
+                    type="button"
+                    className="profile-btn-outline profile-btn-start"
+                    onClick={() => { setTwoFactorMessage(null); setTwoFactorStep("password"); }}
+                  >
+                    {user.two_factor_enabled ? "Turn off" : "Turn on"}
+                  </button>
+                </>
+              )}
+
+              {twoFactorStep === "password" && (
+                <form className="profile-password-form" onSubmit={submitTwoFactorPassword} noValidate>
+                  <div className="profile-input-group">
+                    <label htmlFor="two-factor-password">Confirm your password</label>
+                    <PasswordInput
+                      id="two-factor-password"
+                      autoComplete="current-password"
+                      className="profile-input-field"
+                      value={twoFactorPassword}
+                      onChange={(e) => setTwoFactorPassword(e.target.value)}
+                      disabled={twoFactorBusy}
+                    />
+                  </div>
+                  <div className="profile-form-actions">
+                    <button type="submit" className="profile-btn-dark" disabled={twoFactorBusy}>
+                      {twoFactorBusy ? "Please wait…" : user.two_factor_enabled ? "Turn off" : "Send me a code"}
+                    </button>
+                    <button type="button" className="profile-btn-outline" onClick={resetTwoFactor} disabled={twoFactorBusy}>
+                      Cancel
+                    </button>
+                  </div>
+                </form>
+              )}
+
+              {twoFactorStep === "code" && (
+                <form className="profile-password-form" onSubmit={submitTwoFactorCode} noValidate>
+                  <div className="profile-input-group">
+                    <label htmlFor="two-factor-code">6 digit code</label>
+                    <CodeInput
+                      id="two-factor-code"
+                      className="profile-input-field"
+                      value={twoFactorCode}
+                      onChange={setTwoFactorCode}
+                      disabled={twoFactorBusy}
+                      autoFocus
+                    />
+                  </div>
+                  <div className="profile-form-actions">
+                    <button type="submit" className="profile-btn-dark" disabled={twoFactorBusy}>
+                      {twoFactorBusy ? "Checking…" : "Turn on"}
+                    </button>
+                    <button type="button" className="profile-btn-outline" onClick={resetTwoFactor} disabled={twoFactorBusy}>
                       Cancel
                     </button>
                   </div>
