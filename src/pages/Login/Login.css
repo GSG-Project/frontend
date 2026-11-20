@@ -119,6 +119,10 @@
 .auth-button:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 
 .auth-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
   margin: var(--space-3) 0 0 0;
   text-align: center;
 }
