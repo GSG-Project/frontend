@@ -428,4 +428,4 @@ The following items are present in the code but not complete, or are not impleme
 | **Results of signed-out comparisons** | A comparison made without signing in is shown right after it runs, but cannot be reopened later from its link, because it is not saved to an account. |
 | **Number of models** | The Compare page selects exactly two models. |
 | **Route protection** | There are no route guards. Pages that need an account show a sign-in prompt instead. |
-| **Password reset** | Not available. |
+| **Forgotten password** | A signed-in user can change their password from the Profile page, but there is no "Forgot password" flow to reset it from the login page, because the backend does not provide one. |
