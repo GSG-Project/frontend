@@ -109,15 +109,6 @@
   flex-shrink: 0;
 }
 
-.compare-select {
-  width: 100%;
-  min-height: var(--control-height);
-  padding: var(--space-1) var(--space-5) var(--space-1) var(--space-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  font-size: 0.9rem;
-}
-
 .compare-evaluation-criteria {
   display: flex;
   flex-wrap: wrap;
