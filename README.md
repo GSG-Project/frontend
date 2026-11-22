@@ -23,6 +23,8 @@ This repository contains the frontend only. The backend (API, model providers, A
 ---
 **ModelJudge** is a web application that helps users compare two AI models using the same prompt. It shows their answers side by side and uses an AI Judge to evaluate them based on accuracy, relevance, clarity, and completeness. Users can also view performance metrics, save their experiments, and run them again to compare results. Our goal is to help users choose the best AI model based on its actual performance.
 
+![ModelJudge on a laptop and a tablet](docs/screenshots/00-cover.png)
+
 ## Project Overview
 ModelJudge helps people decide which AI model fits a task by comparing models on evidence rather than reputation. A user picks two models, writes one prompt, and receives:
 
