@@ -21,9 +21,9 @@ This repository contains the frontend only. The backend (API, model providers, A
 11. [Known Limitations and Planned Work](#known-limitations-and-planned-work)
 
 ---
+**ModelJudge** is a web application that helps users compare two AI models using the same prompt. It shows their answers side by side and uses an AI Judge to evaluate them based on accuracy, relevance, clarity, and completeness. Users can also view performance metrics, save their experiments, and run them again to compare results. Our goal is to help users choose the best AI model based on its actual performance.
 
 ## Project Overview
-
 ModelJudge helps people decide which AI model fits a task by comparing models on evidence rather than reputation. A user picks two models, writes one prompt, and receives:
 
 - both answers, side by side;
